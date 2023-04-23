@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+		
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		body{    
+			width: 762px;
+			height: 581px;
+			background: black;
+			color: lightgreen;
+			padding: 10px;
+		}
+		hr{
+			margin-top: 5px;
+			margin-bottom: 5px;
+		}
+		a{
+			color: rgb(72, 194, 72);
+		}
+		a:hover{
+			color: rgb(151, 240, 151);
+		}
+		.action_table{
+			width: 100%;
+		}
+		#action_monitor{
+			font-size: 12px;
+			line-height: 1.1;
+			padding-top: 5px;
+		}
+		#prod_coll_start{
+			padding: 4px 10px;
+			font-size: 16px;
+		}
+		.cl_sl{
+			width: 27px;
+			float: left;
+			text-align: center;
+		}
+		.cl_sku{
+			width: 60px;
+			font-weight: bold;
+			float: left;
+		}
+		
+		#action-loader {
+			display: none;
+			width:25px;
+			height:25px;
+			border-radius:50%;
+			border:4px solid;
+			border-color:#03D322 #0000;
+			animation:s1 0.5s infinite;
+			}
+			@keyframes s1 {to{transform: rotate(.5turn)}}
+
+			#total_prog_bar {
+				animation: blinker 1s linear infinite;
+				width:  0%;
+				max-width: 100%;
+				}
+
+				@keyframes blinker {
+				50% {
+					opacity: 0.7;
+				}
+				}
+    </style>
+  </head>
+  <body>
+		<table class="action_table">
+			<tr>
+				<td><button id="prod_coll_start"> &nbsp; Start &nbsp; </button><div id="action-loader"></div></td>
+				<td style="padding-bottom: 5px;">
+					<div>Copy Done: <span id="copy_done">0</span></div>
+					<div>Already Exist: <span id="exist_found">0</span></div>
+					<div>Total Done: <b><span id="total_done">0</span></b></div>
+				</td>
+				<td style="padding-left: 5px;">
+					<h4>Copy from: https://checkbox.live/products/allcategory</h4>
+					<h4>Copy To: http://docanpat.wplocal/</h4>
+				</td>
+				<td style="padding-bottom: 5px;">
+					<div>Pages Total: <span id="pages_total">0</span></div>
+					<div>Done Pages: <b><span id="pages_done">0</span></b></div>
+					<div>Processing: <span id="pages_processing">0</span></div>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="4" style="border: 1px dashed #03D322;border-radius: 3px;overflow: hidden;">
+					<div style="padding:4px;background: #03D322" id="total_prog_bar"></div>
+				</td>
+			</tr>
+		</table>
+  		
+    	<div id="action_monitor"></div>
+		<table id="action_monitor1"><tbody></tbody></table>
+		
+		
+    	<script src="popup.js"></script>
+  </body>
+</html>
