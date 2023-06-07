@@ -19,7 +19,98 @@ async function addNewProduct(url, data) {
  }
  
 
+ async function getBrandName(descText) {
+
+//	const url = 'https://docanpat.com/get-brandname-by-chatgpt?pasw=df015&content_text=' + descText;
+	const url = 'https://docanpat.com/get-brandname-by-chatgpt?pasw=df015&content_text=' + encodeURIComponent(descText);
+//	const url = 'https://docanpat.com/get-brandname-by-chatgpt?pasw=dfjHDNOASsdf0mSAJKF45643Q34t015&content_text=' + descText;
+
+	console.log("URL for Brand :", url);
+
+	try {
+		const response = await fetch(url);
+
+		const data = await response.json();
+		
+		return data;
+	} catch (error) {
+	  console.error(error);
+	}
+ }
+
+/*
+ async function getBrandName(descText) {
+	const baseUrl = 'https://docanpat.com/get-brandname-by-chatgpt';
+	const pasw = 'dfjHDNOASsdf0mSAJKF45643Q34t015';
  
+	const queryParams = new URLSearchParams({
+	  pasw: pasw,
+	  content_text: descText
+	});
+ 
+	const url = `${baseUrl}?${queryParams.toString()}`;
+	console.log("url:: url::", url);
+	try {
+	  const response = await fetch(url);
+	  const data = await response.json();
+	  return data;
+	} catch (error) {
+	  console.error(error);
+	}
+ }
+ */
+ 
+/*
+ async function getBrandName(descText) {
+	const url = 'https://docanpat.com/get-brandname-by-chatgpt'; // Replace with your target URL
+ 
+	
+
+	try {
+	  const response = await fetch(url, {
+		 method: 'POST',
+		 headers: {
+			'Content-Type': 'application/json' // Adjust the content type if necessary
+		 },
+		 body: JSON.stringify({ "desc_data": descText, "pasw": "dfNF3458hbw015" })
+	  });
+ 
+	  const responseData = await response.json();
+	  return responseData;
+	} catch (error) {
+	  console.error(error);
+	}
+ }
+ */
+
+
+ async function getBrandName(descText) {
+	const url = 'https://docanpat.com/get-brandname-by-chatgpt/'; // Replace with your PHP endpoint URL
+
+	const descText_jsonData = {
+	  pasw: 'dfNF3458hbw015',
+	  content_text: descText
+	};
+
+	
+	 console.log("Brand_name_API_promt:: ", descText_jsonData); 
+
+	try {
+	  const response = await fetch(url, {
+		 method: 'POST',
+		 headers: {
+			'Content-Type': 'application/json' // Adjust the content type if necessary
+		 },
+		 body: JSON.stringify(descText_jsonData)
+	  });
+
+	  const responseData = await response.json();
+	  return responseData;
+	} catch (error) {
+	  console.error(error);
+	}
+ }
+
 
 async function getProduct(skuId) {
 	const url = 'http://docanpat.wplocal/api-check-product-by-sku?sku=' + skuId;
@@ -95,7 +186,7 @@ async function getProduct(skuId) {
 		var productPrice = doc.querySelector('.product-price').textContent.trim();
 		
 		const full_description = doc.querySelectorAll('.full_description');
-		console.log('full_description:: ', full_description);
+	//	console.log('full_description:: ', full_description);
 		const description = full_description[0].innerHTML;
 		let instructions = '';
 		if(full_description[1]){
@@ -151,6 +242,7 @@ async function waitAndLog(url, index) {
 			var elm_all = doc.querySelectorAll('.product-name a');
 			
 			var selected_items_count = elm_all.length;
+			var percentP = 100 / selected_items_count;
 			var sku_id = '';
 			elm_all = Array.from(elm_all);
 			elm_all.reverse();
@@ -175,9 +267,27 @@ async function waitAndLog(url, index) {
 			//	console.log('check_product:: ', check_product);
 				if( check_product.status == "not_found" ){
 					const checkoutProduct = await getProductFromCheckbox(single_prod);
+
+
+					var full_desc_tempElement = document.createElement('div');
+					var full_desc = checkoutProduct.full_description;
+					full_desc = full_desc.replaceAll('</', ' \n </');
+					full_desc = full_desc.replaceAll('<br>', ' \n ');
+
+
+					full_desc_tempElement.innerHTML = full_desc;
+					
+				//	console.log("full_desc_plain_html::", full_desc);
+				//	console.log("full_desc_plain_text::", full_desc_tempElement.innerText);
+
+					// Extract the plain text without HTML tags
+					var full_desc_plain_text = full_desc_tempElement.innerText;
+					var productBrand =	await getBrandName(full_desc_plain_text);
+				//	console.log("productBrand:br:", productBrand);
 					const checkoutProductData = 	{
 																"allImages":checkoutProduct.allImages,
 																"breCategories":checkoutProduct.breCategories,
+																"productBrand":productBrand,
 																"full_description":checkoutProduct.full_description,
 																"instructions":checkoutProduct.instructions,
 																"isStock":checkoutProduct.isStock,
@@ -185,9 +295,9 @@ async function waitAndLog(url, index) {
 																"productTitle":checkoutProduct.productTitle,
 																"productSKU":sku_id
 															};
+					//	console.log("checkoutProduct.isStock::", checkoutProduct.isStock);
 															
 						const addnewProd = await addNewProduct('http://docanpat.wplocal/wp-json/devs-api/api-add-product-n-cat', checkoutProductData);
-						console.log("addnewProd::", addnewProd);
 				
 						actionMonitor.insertAdjacentHTML('afterbegin', "<div class='cl_sl'>" + (i+1) + ".</div> <div class='cl_sku'>" + sku_id + "</div> : "+ checkoutProduct.productTitle +" <a href='"+single_prod+"'>Lnk</a><br>");
 						copy_done_v = copy_done_v+1;
@@ -203,6 +313,10 @@ async function waitAndLog(url, index) {
 				}
 				total_done_v = total_done_v+1;
 				total_done.innerText = total_done_v;
+
+				
+				console.log("percentP::", percentP);
+				document.getElementById('parts_of_pages').style.width = (percentP * (i+1)) + "%";
 			}
 }
 ///*
@@ -210,6 +324,7 @@ async function waitAndLog(url, index) {
 
 
 const urls = [
+
 	"https://checkbox.live/products/allcategory?page=1",
 	"https://checkbox.live/products/allcategory?page=2",
 	"https://checkbox.live/products/allcategory?page=3",
@@ -224,6 +339,7 @@ const urls = [
 	"https://checkbox.live/products/allcategory?page=12",
 	"https://checkbox.live/products/allcategory?page=13",
 	"https://checkbox.live/products/allcategory?page=14",
+	
 	"https://checkbox.live/products/allcategory?page=15",
 	"https://checkbox.live/products/allcategory?page=16",
 	"https://checkbox.live/products/allcategory?page=17",
@@ -234,6 +350,7 @@ const urls = [
 	"https://checkbox.live/products/allcategory?page=22",
 	"https://checkbox.live/products/allcategory?page=23",
 	"https://checkbox.live/products/allcategory?page=24",
+	/*
 	"https://checkbox.live/products/allcategory?page=25",
 	"https://checkbox.live/products/allcategory?page=26",
 	"https://checkbox.live/products/allcategory?page=27",
@@ -242,13 +359,22 @@ const urls = [
 	"https://checkbox.live/products/allcategory?page=30",
 	"https://checkbox.live/products/allcategory?page=31",
 	"https://checkbox.live/products/allcategory?page=32",
+
 	"https://checkbox.live/products/allcategory?page=33",
 	"https://checkbox.live/products/allcategory?page=34",
 	"https://checkbox.live/products/allcategory?page=35",
 	"https://checkbox.live/products/allcategory?page=36",
 	"https://checkbox.live/products/allcategory?page=37",
 	"https://checkbox.live/products/allcategory?page=38",
-	"https://checkbox.live/products/allcategory?page=39"
+	"https://checkbox.live/products/allcategory?page=39",
+	"https://checkbox.live/products/allcategory?page=40",
+	
+	"https://checkbox.live/products/allcategory?page=41",
+	"https://checkbox.live/products/allcategory?page=42",
+	"https://checkbox.live/products/allcategory?page=43",
+	"https://checkbox.live/products/allcategory?page=44",
+	"https://checkbox.live/products/allcategory?page=45"	
+	*/
 ];
 urls.reverse();
 
