@@ -50,6 +50,12 @@
 			font-size: 17px;
     		font-family: monospace;
 		}
+		.copy_to_base_url{
+			color: #ceffce;
+			background: #363636;
+			border: 1px solid;
+			padding: 2px 5px;
+		}
 		#action-loader {
 			display: none;
 			width:25px;
@@ -99,7 +105,8 @@
 				</td>
 				<td style="padding-left: 5px;">
 					<h4>Copy from: https://checkbox.live/products/allcategory</h4>
-					<h4>Copy To: http://docanpat.wplocal/</h4>
+					<h4>Copy To: 
+						<input type="text" name="copy_to_base_url" id="copy_to_base_url" class="copy_to_base_url" value="http://docanpatlive.wplocal/"></h4>
 				</td>
 				<td style="padding-bottom: 5px;">
 					<div class="nav_data">Pages Total: <span id="pages_total">0</span></div>

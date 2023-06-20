@@ -1,4 +1,5 @@
 
+
 async function addNewProduct(url, data) {
 	
 	const options = {
@@ -113,8 +114,11 @@ async function addNewProduct(url, data) {
 
 
 async function getProduct(skuId) {
-	const url = 'http://docanpat.wplocal/api-check-product-by-sku?sku=' + skuId;
 
+	var copy2baseURL = document.getElementById('copy_to_base_url').value;
+
+	const url = copy2baseURL + 'api-check-product-by-sku?sku=' + skuId;
+	console.log("copy2baseURL::", copy2baseURL);
 	var return_json = {
 		"sku": skuId
 	};
@@ -155,8 +159,8 @@ async function getProduct(skuId) {
 
 		// Loop through each image and extract the value of the data-zoom-image attribute
 		images.forEach((image) => {
-		const dataZoomImage = image.getAttribute('data-zoom-image');
-		dataZoomImageValues.push(dataZoomImage);
+			const dataZoomImage = image.getAttribute('data-zoom-image');
+			dataZoomImageValues.push(dataZoomImage);
 		});
 		/* ===========/Get images ========== */
 		/* =========== Get Breadcrumb ========== */
@@ -198,6 +202,14 @@ async function getProduct(skuId) {
 		
 		var breCategories = resultBreadcrumb;
 		
+		var ogImageMeta = doc.querySelector('meta[property="og:image"]');
+		console.log("ogImageMetagetAttrib::", ogImageMeta.getAttribute('content'));
+		var smallImageUrl = '';
+		if (ogImageMeta) {
+		  smallImageUrl = ogImageMeta.getAttribute('content');
+		}
+		
+
 		singleProductData = {
 			"productTitle":productTitle,
 			"isStock":isStock,
@@ -205,7 +217,8 @@ async function getProduct(skuId) {
 			"full_description":description.trim().replace(/(\r\n|\n|\r)/gm, ''),
 			"allImages":allImages,
 			"breCategories":breCategories,
-			"instructions":instructions.trim().replace(/(\r\n|\n|\r)/gm, '')
+			"instructions":instructions.trim().replace(/(\r\n|\n|\r)/gm, ''),
+			"smallImageUrl":smallImageUrl
 		}
 
 		return singleProductData;
@@ -232,6 +245,8 @@ var total_done_v = 0;
 
 async function waitAndLog(url, index) {
 		
+		var copy2baseURL = document.getElementById('copy_to_base_url').value;
+
 			const response = await fetch(url);
 		//	console.log('theURL:', url);
 			const html = await response.text();
@@ -239,7 +254,7 @@ async function waitAndLog(url, index) {
 			const parser = new DOMParser();
 			const doc = parser.parseFromString(html, 'text/html');
 			
-			var elm_all = doc.querySelectorAll('.product-name a');
+			var elm_all = doc.querySelectorAll('.card .product-name a');
 			
 			var selected_items_count = elm_all.length;
 			var percentP = 100 / selected_items_count;
@@ -293,11 +308,12 @@ async function waitAndLog(url, index) {
 																"isStock":checkoutProduct.isStock,
 																"productPrice":checkoutProduct.productPrice,
 																"productTitle":checkoutProduct.productTitle,
-																"productSKU":sku_id
+																"productSKU":sku_id,
+																"smallImageUrl":checkoutProduct.smallImageUrl
 															};
 					//	console.log("checkoutProduct.isStock::", checkoutProduct.isStock);
 															
-						const addnewProd = await addNewProduct('http://docanpat.wplocal/wp-json/devs-api/api-add-product-n-cat', checkoutProductData);
+						const addnewProd = await addNewProduct(copy2baseURL + 'wp-json/devs-api/api-add-product-n-cat', checkoutProductData);
 				
 						actionMonitor.insertAdjacentHTML('afterbegin', "<div class='cl_sl'>" + (i+1) + ".</div> <div class='cl_sku'>" + sku_id + "</div> : "+ checkoutProduct.productTitle +" <a href='"+single_prod+"'>Lnk</a><br>");
 						copy_done_v = copy_done_v+1;
@@ -327,6 +343,7 @@ const urls = [
 
 	"https://checkbox.live/products/allcategory?page=1",
 	"https://checkbox.live/products/allcategory?page=2",
+	/*
 	"https://checkbox.live/products/allcategory?page=3",
 	"https://checkbox.live/products/allcategory?page=4",
 	"https://checkbox.live/products/allcategory?page=5",
@@ -350,7 +367,6 @@ const urls = [
 	"https://checkbox.live/products/allcategory?page=22",
 	"https://checkbox.live/products/allcategory?page=23",
 	"https://checkbox.live/products/allcategory?page=24",
-	/*
 	"https://checkbox.live/products/allcategory?page=25",
 	"https://checkbox.live/products/allcategory?page=26",
 	"https://checkbox.live/products/allcategory?page=27",
@@ -374,7 +390,7 @@ const urls = [
 	"https://checkbox.live/products/allcategory?page=43",
 	"https://checkbox.live/products/allcategory?page=44",
 	"https://checkbox.live/products/allcategory?page=45"	
-	*/
+*/
 ];
 urls.reverse();
 
