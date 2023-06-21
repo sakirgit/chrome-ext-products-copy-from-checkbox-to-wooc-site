@@ -14,15 +14,16 @@
 			color: lightgreen;
 			padding: 10px;
 		}
+		h1,h2,h3,h4,h5,h6{
+			line-height: 1;
+			margin-bottom: 8px;
+		}
 		hr{
 			margin-top: 5px;
 			margin-bottom: 5px;
 		}
 		a{
 			color: rgb(72, 194, 72);
-		}
-		a:hover{
-			color: rgb(151, 240, 151);
 		}
 		.action_table{
 			width: 100%;
@@ -41,7 +42,7 @@
 			float: left;
 		}
 		.cl_sku{
-			width: 60px;
+			width: auto;
 			font-weight: bold;
 			float: left;
 			font-family: monospace;
@@ -79,6 +80,23 @@
 				background: #b6ffc1; 
 				max-width: 100%;
 				transition: width 1s ease-in-out;
+				display: table;
+			}
+			.div_row{
+				display: flex;
+			}
+			.div_row:hover{
+				background-color: #00ff2a;
+				color: #000000;
+			}
+			.div_row a:hover{
+				color: darkgreen;
+			}
+			.div_row div{
+				display: table-cell;
+				padding: 3px;
+				vertical-align: middle;
+				padding: 2px 15px;
 			}
 
 				@keyframes blinker {

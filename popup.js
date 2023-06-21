@@ -118,7 +118,7 @@ async function getProduct(skuId) {
 	var copy2baseURL = document.getElementById('copy_to_base_url').value;
 
 	const url = copy2baseURL + 'api-check-product-by-sku?sku=' + skuId;
-	console.log("copy2baseURL::", copy2baseURL);
+//	console.log("checkProduct_API_url::", url);
 	var return_json = {
 		"sku": skuId
 	};
@@ -129,6 +129,9 @@ async function getProduct(skuId) {
 		const data = await response.json();
 		
 		return_json["status"] = data.status;
+		if( data.status == "found" ){
+			return_json["prod_id"] = data.id;
+		}
 		
 		return return_json;
 	} catch (error) {
@@ -259,6 +262,7 @@ async function waitAndLog(url, index) {
 			var selected_items_count = elm_all.length;
 			var percentP = 100 / selected_items_count;
 			var sku_id = '';
+			var prod_id = '';
 			elm_all = Array.from(elm_all);
 			elm_all.reverse();
 	//		console.log('elm_all:: ggggg ', elm_all);
@@ -271,15 +275,16 @@ async function waitAndLog(url, index) {
 				var single_prod = 		elm_all[i].href;
 				var single_prod_label = 		elm_all[i].innerText;
 				
-				console.log('iii:: ', i);
-				console.log('single_prod:: ', single_prod);
-				console.log('single_prod_label:: ', single_prod_label);
+			//	console.log('iii:: ', i);
+			//	console.log('single_prod:: ', single_prod);
+			//	console.log('single_prod_label:: ', single_prod_label);
 				sku_id = single_prod_label.split(" ");
 				sku_id = sku_id[0];
 				console.log('sku_id:: ', sku_id);
 				var check_product =	await getProduct(sku_id);
+				prod_id = check_product.prod_id;
 				
-			//	console.log('check_product:: ', check_product);
+				console.log('check_product:: ', check_product);
 				if( check_product.status == "not_found" ){
 					const checkoutProduct = await getProductFromCheckbox(single_prod);
 
@@ -314,8 +319,8 @@ async function waitAndLog(url, index) {
 					//	console.log("checkoutProduct.isStock::", checkoutProduct.isStock);
 															
 						const addnewProd = await addNewProduct(copy2baseURL + 'wp-json/devs-api/api-add-product-n-cat', checkoutProductData);
-				
-						actionMonitor.insertAdjacentHTML('afterbegin', "<div class='cl_sl'>" + (i+1) + ".</div> <div class='cl_sku'>" + sku_id + "</div> : "+ checkoutProduct.productTitle +" <a href='"+single_prod+"'>Lnk</a><br>");
+						console.log("addnewProdaddnewProdaddnewProd:: ", addnewProd);
+						actionMonitor.insertAdjacentHTML('afterbegin', "<div class='div_row'><div class='cl_sl'>" + (i+1) + ".</div> <div class='cl_sku'>" + sku_id + "</div> <div>" + addnewProd.prod_id + "</div>  <div><a href='"+single_prod+"'>CBx Lnk</a></div></div>");
 						copy_done_v = copy_done_v+1;
 						copy_done.innerText = copy_done_v;
 					
@@ -323,7 +328,10 @@ async function waitAndLog(url, index) {
 					//	console.log(`page-${index + 1} Done`);
 				}else{
 				
-					actionMonitor.insertAdjacentHTML('afterbegin', "<div class='cl_sl'>" + (i+1) + ".</div> <div class='cl_sku'>" + sku_id + "</div> : [Already Exist !]<br>");
+					actionMonitor.insertAdjacentHTML(
+						'afterbegin', 
+						"<div class='div_row'><div class='cl_sl'>" + (i+1) + ".</div> <div class='cl_sku'>" + sku_id + "</div> <div>" + prod_id + "</div> <div>[Already Exist !]</div> </div>"
+					);
 					exist_found_v = exist_found_v+1;
 					exist_found.innerText = exist_found_v;
 				}
@@ -342,8 +350,8 @@ async function waitAndLog(url, index) {
 const urls = [
 
 	"https://checkbox.live/products/allcategory?page=1",
-	"https://checkbox.live/products/allcategory?page=2",
 	/*
+	"https://checkbox.live/products/allcategory?page=2",
 	"https://checkbox.live/products/allcategory?page=3",
 	"https://checkbox.live/products/allcategory?page=4",
 	"https://checkbox.live/products/allcategory?page=5",
@@ -390,6 +398,8 @@ const urls = [
 	"https://checkbox.live/products/allcategory?page=43",
 	"https://checkbox.live/products/allcategory?page=44",
 	"https://checkbox.live/products/allcategory?page=45"	
+	
+
 */
 ];
 urls.reverse();
